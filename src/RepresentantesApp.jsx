@@ -10,51 +10,43 @@ export default function RepresentantesApp() {
 
   useEffect(() => {
     fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(text => {
+      .then((res) => res.text())
+      .then((text) => {
         const linhas = text.split("\n");
-        const resultado = linhas.slice(1).map(linha => {
+        const resultado = linhas.slice(1).map((linha) => {
           const [nome, telefone, link] = linha.split(",");
           return { nome, telefone, link };
         });
-        setDados(resultado.filter(rep => rep.nome));
+        setDados(resultado);
       });
   }, []);
 
-  const filtrados = dados.filter(rep =>
-    rep.nome.toLowerCase().includes(filtro.toLowerCase())
+  const dadosFiltrados = dados.filter((dado) =>
+    dado.nome?.toLowerCase().includes(filtro.toLowerCase())
   );
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Distribuição de Representantes</h1>
+    <div className="p-4 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Representantes</h1>
+      
       <Input
-        placeholder="Buscar representante..."
+        type="text"
+        placeholder="Buscar por nome..."
         value={filtro}
-        onChange={e => setFiltro(e.target.value)}
-        className="mb-4"
+        onChange={(e) => setFiltro(e.target.value)}
       />
-      <div className="space-y-4">
-        {filtrados.map((rep, i) => (
-          <div key={i} className="flex justify-between items-center border p-4 rounded-xl shadow-sm">
-            <div>
-              <p className="font-semibold">{rep.nome}</p>
-              <a href={rep.link} className="text-sm text-blue-600 underline" target="_blank">
-                Ver material
-              </a>
-            </div>
-            <Button
-              className="bg-green-500 hover:bg-green-600"
-              onClick={() => {
-                const msg = `Olá ${rep.nome}, segue o material: ${rep.link}`;
-                window.open(`https://wa.me/${rep.telefone}?text=${encodeURIComponent(msg)}`);
-              }}
-            >
-              WhatsApp
-            </Button>
-          </div>
+
+      <ul className="mt-4 space-y-4">
+        {dadosFiltrados.map((dado, index) => (
+          <li key={index} className="p-4 border rounded shadow-sm">
+            <p className="font-semibold">{dado.nome}</p>
+            <p>{dado.telefone}</p>
+            <a href={dado.link} target="_blank" rel="noopener noreferrer">
+              <Button>Acessar contato</Button>
+            </a>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 }
